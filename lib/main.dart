@@ -35,11 +35,11 @@ class MyAppState extends ChangeNotifier {
 
   var favorites = <WordPair>[];
 
-  void toggleFavorite() {
-    if (favorites.contains(current)) {
-      favorites.remove(current);
+  void toggleFavorite(WordPair target) {
+    if (favorites.contains(target)) {
+      favorites.remove(target);
     } else {
-      favorites.add(current);
+      favorites.add(target);
     }
     notifyListeners();
   }
@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = const GeneratorPage();
         break;
       case 1:
-        page = const Placeholder();
+        page = const FavoritesPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -135,7 +135,7 @@ class GeneratorPage extends StatelessWidget {
             children: [
               ElevatedButton.icon(
                 onPressed: () {
-                  appState.toggleFavorite();
+                  appState.toggleFavorite(pair);
                 },
                 icon: Icon(icon),
                 label: const Text('Like'),
@@ -178,6 +178,33 @@ class BigCard extends StatelessWidget {
           style: style,
         ),
       ),
+    );
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  const FavoritesPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Text('You have ${appState.favorites.length} favorites:'),
+        ),
+        for (var pair in appState.favorites)
+          ListTile(
+            leading: IconButton(
+              icon: const Icon(Icons.favorite),
+              onPressed: () {
+                appState.toggleFavorite(pair);
+              },
+            ),
+            title: Text(pair.asLowerCase),
+          ),
+      ],
     );
   }
 }
