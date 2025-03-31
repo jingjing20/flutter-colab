@@ -18,6 +18,12 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          navigationBarTheme: NavigationBarThemeData(
+            indicatorColor: Colors.deepOrange.withOpacity(0.2),
+            labelTextStyle: WidgetStateProperty.all(
+              const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+          ),
         ),
         home: const MyHomePage(),
       ),
@@ -95,51 +101,26 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < 450) {
-            // Use a more mobile-friendly layout with BottomNavigationBar
-            // on narrow screens.
-            return Column(
-              children: [
-                Expanded(child: mainArea),
-                SafeArea(
-                  child: BottomNavigationBar(
-                    items: const [
-                      BottomNavigationBarItem(
+    return SafeArea(
+      child: Scaffold(
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 450) {
+              // Use a more mobile-friendly layout with BottomNavigationBar
+              // on narrow screens.
+              return Column(
+                children: [
+                  Expanded(child: mainArea),
+                  NavigationBar(
+                    backgroundColor: colorScheme.surfaceContainerHighest,
+                    destinations: const [
+                      NavigationDestination(
                         icon: Icon(Icons.home),
                         label: 'Home',
                       ),
-                      BottomNavigationBarItem(
+                      NavigationDestination(
                         icon: Icon(Icons.favorite),
                         label: 'Favorites',
-                      ),
-                    ],
-                    currentIndex: selectedIndex,
-                    onTap: (value) {
-                      setState(() {
-                        selectedIndex = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return Row(
-              children: [
-                SafeArea(
-                  child: NavigationRail(
-                    extended: constraints.maxWidth >= 600,
-                    destinations: const [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.home),
-                        label: Text('Home'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.favorite),
-                        label: Text('Favorites'),
                       ),
                     ],
                     selectedIndex: selectedIndex,
@@ -149,12 +130,38 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     },
                   ),
-                ),
-                Expanded(child: mainArea),
-              ],
-            );
-          }
-        },
+                ],
+              );
+            } else {
+              return Row(
+                children: [
+                  SafeArea(
+                    child: NavigationRail(
+                      extended: constraints.maxWidth >= 600,
+                      destinations: const [
+                        NavigationRailDestination(
+                          icon: Icon(Icons.home),
+                          label: Text('Home'),
+                        ),
+                        NavigationRailDestination(
+                          icon: Icon(Icons.favorite),
+                          label: Text('Favorites'),
+                        ),
+                      ],
+                      selectedIndex: selectedIndex,
+                      onDestinationSelected: (value) {
+                        setState(() {
+                          selectedIndex = value;
+                        });
+                      },
+                    ),
+                  ),
+                  Expanded(child: mainArea),
+                ],
+              );
+            }
+          },
+        ),
       ),
     );
   }
